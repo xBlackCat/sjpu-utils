@@ -67,4 +67,8 @@ public interface DoubleUnaryOperatorEx<E extends Throwable> {
         Objects.requireNonNull(after);
         return (double t) -> after.applyAsDouble(applyAsDouble(t));
     }
+
+    default DoubleSupplierEx<E> fix(double operand) {
+        return () -> applyAsDouble(operand);
+    }
 }

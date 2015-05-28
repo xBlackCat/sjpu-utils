@@ -25,4 +25,16 @@ public interface ToDoubleBiFunctionEx<T, U, E extends Throwable> {
      * @return the function result
      */
     double applyAsDouble(T t, U u) throws E;
+
+    default ToDoubleFunctionEx<T, E> fixRight(U u) {
+        return t -> applyAsDouble(t, u);
+    }
+
+    default ToDoubleFunctionEx<U, E> fixLeft(T t) {
+        return u -> applyAsDouble(t, u);
+    }
+
+    default DoubleSupplierEx<E> fix(T t, U u) {
+        return () -> applyAsDouble(t, u);
+    }
 }

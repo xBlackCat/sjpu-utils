@@ -22,4 +22,8 @@ public interface IntToLongFunctionEx<E extends Throwable> {
      * @return the function result
      */
     long applyAsLong(int value) throws E;
+
+    default LongSupplierEx<E> fix(int value) {
+        return () -> applyAsLong(value);
+    }
 }

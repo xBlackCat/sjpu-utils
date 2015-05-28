@@ -14,7 +14,6 @@ package org.xblackcat.sjpu.util.function;
  */
 @FunctionalInterface
 public interface DoubleToIntFunctionEx<E extends Throwable> {
-
     /**
      * Applies this function to the given argument.
      *
@@ -22,4 +21,8 @@ public interface DoubleToIntFunctionEx<E extends Throwable> {
      * @return the function result
      */
     int applyAsInt(double value) throws E;
+
+    default IntSupplierEx<E> fix(double value) {
+        return () -> applyAsInt(value);
+    }
 }

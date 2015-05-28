@@ -23,4 +23,8 @@ public interface LongFunctionEx<R, E extends Throwable> {
      * @return the function result
      */
     R apply(long value) throws E;
+
+    default SupplierEx<R, E> fix(long value) {
+        return () -> apply(value);
+    }
 }

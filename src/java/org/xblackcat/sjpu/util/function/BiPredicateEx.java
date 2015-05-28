@@ -80,4 +80,16 @@ public interface BiPredicateEx<T, U, E extends Throwable> {
         Objects.requireNonNull(other);
         return (T t, U u) -> test(t, u) || other.test(t, u);
     }
+
+    default ConsumerEx<T, E> fixRight(U u) {
+        return t -> test(t, u);
+    }
+
+    default ConsumerEx<U, E> fixLeft(T t) {
+        return u -> test(t, u);
+    }
+
+    default BooleanSupplierEx<E> fix(T t, U u) {
+        return () -> test(t, u);
+    }
 }

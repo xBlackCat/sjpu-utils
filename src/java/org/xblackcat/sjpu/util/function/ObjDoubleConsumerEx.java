@@ -25,4 +25,12 @@ public interface ObjDoubleConsumerEx<T, E extends Throwable> {
      * @param value the second input argument
      */
     void accept(T t, double value) throws E;
+
+    default ConsumerEx<T, E> fixRight(double value) {
+        return t -> accept(t, value);
+    }
+
+    default DoubleConsumerEx<E> fixLeft(T t) {
+        return value -> accept(t, value);
+    }
 }

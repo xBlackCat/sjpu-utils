@@ -17,7 +17,6 @@ package org.xblackcat.sjpu.util.function;
  */
 @FunctionalInterface
 public interface BooleanSupplierEx<E extends Throwable> {
-
     /**
      * Gets a result.
      *

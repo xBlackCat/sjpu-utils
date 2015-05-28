@@ -48,4 +48,12 @@ public interface BiConsumerEx<T, U, E extends Throwable> {
             after.accept(l, r);
         };
     }
+
+    default ConsumerEx<T, E> fixRight(U u) {
+        return t -> accept(t, u);
+    }
+
+    default ConsumerEx<U, E> fixLeft(T t) {
+        return u -> accept(t, u);
+    }
 }

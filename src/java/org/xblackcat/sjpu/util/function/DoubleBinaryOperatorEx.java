@@ -23,4 +23,16 @@ public interface DoubleBinaryOperatorEx<E extends Throwable> {
      * @return the operator result
      */
     double applyAsDouble(double left, double right) throws E;
+
+    default DoubleUnaryOperatorEx<E> fixRight(double right) {
+        return left -> applyAsDouble(left, right);
+    }
+
+    default DoubleUnaryOperatorEx<E> fixLeft(double left) {
+        return right -> applyAsDouble(left, right);
+    }
+
+    default DoubleSupplierEx<E> fix(double left, double right) {
+        return () -> applyAsDouble(left, right);
+    }
 }

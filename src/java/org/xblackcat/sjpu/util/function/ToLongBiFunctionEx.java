@@ -25,4 +25,17 @@ public interface ToLongBiFunctionEx<T, U, E extends Throwable> {
      * @return the function result
      */
     long applyAsLong(T t, U u) throws E;
+    
+    default ToLongFunctionEx<T, E> fixRight(U right) {
+        return left -> applyAsLong(left, right);
+    }
+
+    default ToLongFunctionEx<U, E> fixLeft(T left) {
+        return right -> applyAsLong(left, right);
+    }
+
+    default LongSupplierEx<E> fix(T left, U right) {
+        return () -> applyAsLong(left, right);
+    }
+    
 }

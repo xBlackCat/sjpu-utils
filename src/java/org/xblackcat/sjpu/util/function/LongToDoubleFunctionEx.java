@@ -22,4 +22,8 @@ public interface LongToDoubleFunctionEx<E extends Throwable> {
      * @return the function result
      */
     double applyAsDouble(long value) throws E;
+
+    default DoubleSupplierEx<E> fix(long value) {
+        return () -> applyAsDouble(value);
+    }
 }

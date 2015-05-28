@@ -22,4 +22,8 @@ public interface ToIntFunctionEx<T, E extends Throwable> {
      * @return the function result
      */
     int applyAsInt(T value) throws E;
+
+    default IntSupplierEx<E> fix(T value) {
+        return () -> applyAsInt(value);
+    }
 }

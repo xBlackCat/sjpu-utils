@@ -24,4 +24,16 @@ public interface LongBinaryOperatorEx<E extends Throwable> {
      * @return the operator result
      */
     long applyAsLong(long left, long right) throws E;
+
+    default LongUnaryOperatorEx<E> fixRight(long right) {
+        return left -> applyAsLong(left, right);
+    }
+
+    default LongUnaryOperatorEx<E> fixLeft(long left) {
+        return right -> applyAsLong(left, right);
+    }
+
+    default LongSupplierEx<E> fix(long left, long right) {
+        return () -> applyAsLong(left, right);
+    }
 }

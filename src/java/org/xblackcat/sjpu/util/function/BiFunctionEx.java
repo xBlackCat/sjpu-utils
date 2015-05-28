@@ -45,4 +45,16 @@ public interface BiFunctionEx<T, U, R, E extends Throwable> {
         Objects.requireNonNull(after);
         return (T t, U u) -> after.apply(apply(t, u));
     }
+
+    default FunctionEx<T, R, E> fixRight(U u) {
+        return t -> apply(t, u);
+    }
+
+    default FunctionEx<U, R, E> fixLeft(T t) {
+        return u -> apply(t, u);
+    }
+
+    default SupplierEx<R, E> fix(T t, U u) {
+        return () -> apply(t, u);
+    }
 }

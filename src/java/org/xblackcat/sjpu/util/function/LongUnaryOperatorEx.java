@@ -31,7 +31,7 @@ public interface LongUnaryOperatorEx<E extends Throwable> {
      * @param operand the operand
      * @return the operator result
      */
-    long applyAsLong(long operand) throws Exception;
+    long applyAsLong(long operand) throws E;
 
     /**
      * Returns a composed operator that first applies the {@code before}

@@ -67,4 +67,9 @@ public interface IntUnaryOperatorEx<E extends Throwable> {
         Objects.requireNonNull(after);
         return (int t) -> after.applyAsInt(applyAsInt(t));
     }
+
+    default IntSupplierEx<E> fix(int value) {
+        return () -> applyAsInt(value);
+    }
+
 }

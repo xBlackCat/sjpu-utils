@@ -23,4 +23,8 @@ public interface IntFunctionEx<R, E extends Throwable> {
      * @return the function result
      */
     R apply(int value) throws E;
+
+    default SupplierEx<R, E> fix(int value) {
+        return () -> apply(value);
+    }
 }

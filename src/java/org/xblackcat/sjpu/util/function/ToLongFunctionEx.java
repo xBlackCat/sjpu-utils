@@ -22,4 +22,9 @@ public interface ToLongFunctionEx<T, E extends Throwable> {
      * @return the function result
      */
     long applyAsLong(T value) throws E;
+
+    default LongSupplierEx<E> fix(T value) {
+        return () -> applyAsLong(value);
+    }
+
 }

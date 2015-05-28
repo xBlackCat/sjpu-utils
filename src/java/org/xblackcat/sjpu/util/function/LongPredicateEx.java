@@ -102,4 +102,9 @@ public interface LongPredicateEx<E extends Throwable> {
         Objects.requireNonNull(other);
         return (value) -> test(value) || other.test(value);
     }
+
+    default BooleanSupplierEx<E> fix(long value) {
+        return () -> test(value);
+    }
+
 }

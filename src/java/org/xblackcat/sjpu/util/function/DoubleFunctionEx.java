@@ -23,4 +23,8 @@ public interface DoubleFunctionEx<R, E extends Throwable> {
      * @return the function result
      */
     R apply(double value) throws E;
+
+    default SupplierEx<R, E> fix(double value) {
+        return () -> apply(value);
+    }
 }

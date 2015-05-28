@@ -71,4 +71,8 @@ public interface FunctionEx<T, R, E extends Throwable> {
         Objects.requireNonNull(after);
         return (T t) -> after.apply(apply(t));
     }
+
+    default SupplierEx<R, E> fix(T t) {
+        return () -> apply(t);
+    }
 }

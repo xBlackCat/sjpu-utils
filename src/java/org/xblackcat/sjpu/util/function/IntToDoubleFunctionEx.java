@@ -22,4 +22,8 @@ public interface IntToDoubleFunctionEx<E extends Throwable> {
      * @return the function result
      */
     double applyAsDouble(int value) throws E;
+
+    default DoubleSupplierEx<E> fix(int value) {
+        return () -> applyAsDouble(value);
+    }
 }

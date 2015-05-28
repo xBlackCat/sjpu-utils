@@ -78,4 +78,8 @@ public interface DoublePredicateEx<E extends Throwable> {
         Objects.requireNonNull(other);
         return (value) -> test(value) || other.test(value);
     }
+
+    default BooleanSupplierEx<E> fix(double value) {
+        return () -> test(value);
+    }
 }

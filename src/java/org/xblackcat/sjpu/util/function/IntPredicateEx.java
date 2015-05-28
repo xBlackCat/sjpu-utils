@@ -102,4 +102,8 @@ public interface IntPredicateEx<E extends Throwable> {
         Objects.requireNonNull(other);
         return (value) -> test(value) || other.test(value);
     }
+
+    default BooleanSupplierEx<E> fix(int value) {
+        return () -> test(value);
+    }
 }

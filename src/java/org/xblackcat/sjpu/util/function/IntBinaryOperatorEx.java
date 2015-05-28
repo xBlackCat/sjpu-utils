@@ -24,4 +24,16 @@ public interface IntBinaryOperatorEx<E extends Throwable> {
      * @return the operator result
      */
     int applyAsInt(int left, int right) throws E;
+    
+    default IntUnaryOperatorEx<E> fixRight(int right) {
+        return left -> applyAsInt(left, right);
+    }
+
+    default IntUnaryOperatorEx<E> fixLeft(int left) {
+        return right -> applyAsInt(left, right);
+    }
+
+    default IntSupplierEx<E> fix(int left, int right) {
+        return () -> applyAsInt(left, right);
+    }
 }

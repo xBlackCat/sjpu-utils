@@ -92,4 +92,8 @@ public interface PredicateEx<T, E extends Throwable> {
         Objects.requireNonNull(other);
         return (t) -> test(t) || other.test(t);
     }
+
+    default BooleanSupplierEx<E> fix(T t) {
+        return () -> test(t);
+    }
 }

@@ -49,4 +49,12 @@ public interface BinaryOperatorEx<T, E extends Throwable> extends BiFunctionEx<T
         Objects.requireNonNull(comparator);
         return (a, b) -> comparator.compare(a, b) >= 0 ? a : b;
     }
+
+    default UnaryOperatorEx<T, E> fixRight(T u) {
+        return t -> apply(t, u);
+    }
+
+    default UnaryOperatorEx<T, E> fixLeft(T t) {
+        return u -> apply(t, u);
+    }
 }

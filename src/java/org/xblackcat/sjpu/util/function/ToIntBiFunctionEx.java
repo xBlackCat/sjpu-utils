@@ -25,4 +25,16 @@ public interface ToIntBiFunctionEx<T, U, E extends Throwable> {
      * @return the function result
      */
     int applyAsInt(T t, U u) throws E;
+
+    default ToIntFunctionEx<T, E> fixRight(U u) {
+        return t -> applyAsInt(t, u);
+    }
+
+    default ToIntFunctionEx<U, E> fixLeft(T t) {
+        return u -> applyAsInt(t, u);
+    }
+
+    default IntSupplierEx<E> fix(T t, U u) {
+        return () -> applyAsInt(t, u);
+    }
 }
