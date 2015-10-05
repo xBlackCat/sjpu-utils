@@ -44,7 +44,7 @@ public interface DoubleUnaryOperatorEx<E extends Throwable> {
      * @return a composed operator that first applies the {@code before}
      * operator and then applies this operator
      * @throws NullPointerException if before is null
-     * @see #andThen(DoubleUnaryOperatorEx<E>)
+     * @see #andThen(DoubleUnaryOperatorEx)
      */
     default DoubleUnaryOperatorEx<E> compose(DoubleUnaryOperatorEx<E> before) {
         Objects.requireNonNull(before);
@@ -61,7 +61,7 @@ public interface DoubleUnaryOperatorEx<E extends Throwable> {
      * @return a composed operator that first applies this operator and then
      * applies the {@code after} operator
      * @throws NullPointerException if after is null
-     * @see #compose(DoubleUnaryOperatorEx<E>)
+     * @see #compose(DoubleUnaryOperatorEx)
      */
     default DoubleUnaryOperatorEx<E> andThen(DoubleUnaryOperatorEx<E> after) {
         Objects.requireNonNull(after);
