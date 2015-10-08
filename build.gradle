@@ -1,10 +1,11 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = new File('build.txt').getText('UTF-8')
-def outputBaseName = 'sjpu-utils'
+group = 'org.xblackcat'
 def projectTitle = 'SJPU Utils'
 ext.commonManifest = manifest {
     attributes(
@@ -13,9 +14,7 @@ ext.commonManifest = manifest {
     )
 }
 
-
 jar {
-    baseName = outputBaseName
     manifest = project.manifest {
         from commonManifest
     }
@@ -37,7 +36,6 @@ dependencies {
 }
 
 task sourcesJar(type: Jar) {
-    baseName = outputBaseName
     from sourceSets.main.allJava
     classifier = 'sources'
     manifest = project.manifest {
@@ -50,7 +48,6 @@ javadoc {
 }
 
 task docsJar(dependsOn: javadoc, type: Jar) {
-    baseName = outputBaseName
     from javadoc.outputs.files
     classifier = 'docs'
     manifest = project.manifest {
@@ -59,7 +56,6 @@ task docsJar(dependsOn: javadoc, type: Jar) {
 }
 
 task sourcesZip(type: Zip) {
-    baseName = outputBaseName
     from project.projectDir
     include 'src/**'
     include 'test/**'
@@ -73,7 +69,6 @@ task sourcesZip(type: Zip) {
 }
 
 task binZip(dependsOn: 'jar', type: Zip) {
-    baseName = outputBaseName
     from jar.outputs.files
     into('dep') {
         from configurations.compile
@@ -90,6 +85,16 @@ sourceSets {
     test {
         java {
             srcDir 'test/java'
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: mavenCentralUrl) {
+                authentication(userName: mavenCentralUser, password: mavenCentralPassword)
+            }
         }
     }
 }
