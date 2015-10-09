@@ -1,12 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = new File('build.txt').getText('UTF-8')
-group = 'org.xblackcat'
+group = 'org.xblackcat.sjpu'
 def projectTitle = 'SJPU Utils'
+
+version = new File('build.txt').getText('UTF-8')
 ext.commonManifest = manifest {
     attributes(
             "Implementation-Title": projectTitle,
@@ -32,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile group: 'junit', name: 'junit', version: '[4.12,)'
 }
 
 task sourcesJar(type: Jar) {
@@ -47,13 +49,22 @@ javadoc {
     title = projectTitle
 }
 
-task docsJar(dependsOn: javadoc, type: Jar) {
+task javadocJar(dependsOn: javadoc, type: Jar) {
     from javadoc.outputs.files
-    classifier = 'docs'
+    classifier = 'javadoc'
     manifest = project.manifest {
         from commonManifest
     }
 }
+
+//[compileJava, compileTestJava]*.options.collect {options ->
+//  options.deprecation = true
+//  options.compilerArgs.add '-Xlint'
+//  options.compilerArgs.add '-Xlint:-unchecked'
+//  options.compilerArgs.add '-Xlint:-serial'
+//  options.compilerArgs.add '-Xlint:-rawtypes'
+//}
+
 
 task sourcesZip(type: Zip) {
     from project.projectDir
@@ -89,14 +100,57 @@ sourceSets {
     }
 }
 
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
             repository(url: mavenCentralUrl) {
                 authentication(userName: mavenCentralUser, password: mavenCentralPassword)
             }
+
+            pom.project {
+                 name projectTitle
+                 packaging 'jar'
+                 description 'Collect of utility classes and interfaces. Currenlty contains: extention of standart functional interfaces (java.util.function.*) which allow to declare thrown exception as type parameter; Simple implementation of LockPool'
+                 url 'https://github.com/xBlackCat/sjpu-utils'
+
+                 scm {
+                     url 'scm:git@github.com:xBlackCat/sjpu-utils.git'
+                     connection 'scm:git@github.com:xBlackCat/sjpu-utils.git'
+                     developerConnection 'scm:git@github.com:xBlackCat/sjpu-utils.git'
+                 }
+
+                 licenses {
+                     license {
+                         name 'The Apache Software License, Version 2.0'
+                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                         distribution 'repo'
+                     }
+                 }
+
+                 developers {
+                     developer {
+                         id 'xBlackCat'
+                         name 'Zhukov Alexei'
+                         email 'xblackcat@gmail.com'
+                     }
+                 }
+             }
+
         }
     }
 }
 
-task buildAll(dependsOn: ['build', 'sourcesJar', 'binZip', 'sourcesZip', 'docsJar']) {}
+
+task buildAll(dependsOn: ['build', 'sourcesJar', 'binZip', 'sourcesZip', 'javadocJar']) {}
