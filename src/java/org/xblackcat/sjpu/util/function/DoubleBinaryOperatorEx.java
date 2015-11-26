@@ -1,6 +1,7 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.function.BiFunction;
+import java.util.function.DoubleBinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -52,7 +53,35 @@ public interface DoubleBinaryOperatorEx<E extends Throwable> {
         return cover(e -> text.get(), cover);
     }
 
-    default <C extends Throwable> DoubleBinaryOperatorEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+    default <C extends Throwable> DoubleBinaryOperatorEx<C> cover(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, C> cover
+    ) {
+        return (t, u) -> {
+            try {
+                return applyAsDouble(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default DoubleBinaryOperator unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default DoubleBinaryOperator unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default DoubleBinaryOperator unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default DoubleBinaryOperator unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return (t, u) -> {
             try {
                 return applyAsDouble(t, u);

@@ -27,6 +27,7 @@ package org.xblackcat.sjpu.util.function;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
 /**
@@ -123,6 +124,31 @@ public interface IntPredicateEx<E extends Throwable> {
     }
 
     default <C extends Throwable> IntPredicateEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return t -> {
+            try {
+                return test(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default IntPredicate unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default IntPredicate unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default IntPredicate unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default IntPredicate unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return t -> {
             try {
                 return test(t);

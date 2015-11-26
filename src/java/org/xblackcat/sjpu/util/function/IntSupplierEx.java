@@ -2,6 +2,7 @@ package org.xblackcat.sjpu.util.function;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -41,6 +42,31 @@ public interface IntSupplierEx<E extends Throwable> {
     }
 
     default <C extends Throwable> IntSupplierEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return () -> {
+            try {
+                return getAsInt();
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default IntSupplier unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default IntSupplier unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default IntSupplier unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default IntSupplier unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return () -> {
             try {
                 return getAsInt();

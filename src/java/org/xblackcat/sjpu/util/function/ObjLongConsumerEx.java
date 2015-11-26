@@ -2,6 +2,7 @@ package org.xblackcat.sjpu.util.function;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.ObjLongConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -51,6 +52,31 @@ public interface ObjLongConsumerEx<T, E extends Throwable> {
     }
 
     default <C extends Throwable> ObjLongConsumerEx<T, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                accept(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default ObjLongConsumer<T> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default ObjLongConsumer<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default ObjLongConsumer<T> unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default ObjLongConsumer<T> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return (t, u) -> {
             try {
                 accept(t, u);

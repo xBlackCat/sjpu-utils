@@ -3,6 +3,7 @@ package org.xblackcat.sjpu.util.function;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToIntBiFunction;
 
 /**
  * Represents a function that accepts two arguments and produces an int-valued
@@ -42,21 +43,21 @@ public interface ToIntBiFunctionEx<T, U, E extends Throwable> {
         return () -> applyAsInt(t, u);
     }
 
-    default <C extends Throwable> ToIntBiFunctionEx<T, U, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
-        return cover(() -> exceptionText, cover);
+    default ToIntBiFunction<T, U> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
     }
 
-    default <C extends Throwable> ToIntBiFunctionEx<T, U, C> cover(BiFunction<String, Throwable, C> cover) {
-        return cover(Throwable::getMessage, cover);
+    default ToIntBiFunction<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
     }
 
-    default <C extends Throwable> ToIntBiFunctionEx<T, U, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
-        return cover(e -> text.get(), cover);
+    default ToIntBiFunction<T, U> unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
     }
 
-    default <C extends Throwable> ToIntBiFunctionEx<T, U, C> cover(
+    default ToIntBiFunction<T, U> unchecked(
             Function<Throwable, String> text,
-            BiFunction<String, Throwable, C> cover
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
     ) {
         return (t, u) -> {
             try {

@@ -3,6 +3,7 @@ package org.xblackcat.sjpu.util.function;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToDoubleBiFunction;
 
 /**
  * Represents a function that accepts two arguments and produces a double-valued
@@ -57,6 +58,37 @@ public interface ToDoubleBiFunctionEx<T, U, E extends Throwable> {
     default <C extends Throwable> ToDoubleBiFunctionEx<T, U, C> cover(
             Function<Throwable, String> text,
             BiFunction<String, Throwable, C> cover
+    ) {
+        return (t, u) -> {
+            try {
+                return applyAsDouble(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default ToDoubleBiFunction<T, U> unchecked(
+            String exceptionText,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default ToDoubleBiFunction<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default ToDoubleBiFunction<T, U> unchecked(
+            Supplier<String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default ToDoubleBiFunction<T, U> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
     ) {
         return (t, u) -> {
             try {

@@ -2,6 +2,7 @@ package org.xblackcat.sjpu.util.function;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.LongToDoubleFunction;
 import java.util.function.Supplier;
 
 /**
@@ -43,7 +44,35 @@ public interface LongToDoubleFunctionEx<E extends Throwable> {
         return cover(e -> text.get(), cover);
     }
 
-    default <C extends Throwable> LongToDoubleFunctionEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+    default <C extends Throwable> LongToDoubleFunctionEx<C> cover(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, C> cover
+    ) {
+        return t -> {
+            try {
+                return applyAsDouble(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default LongToDoubleFunction unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default LongToDoubleFunction unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default LongToDoubleFunction unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default LongToDoubleFunction unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return t -> {
             try {
                 return applyAsDouble(t);

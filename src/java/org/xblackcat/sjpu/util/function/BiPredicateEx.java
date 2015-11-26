@@ -2,6 +2,7 @@ package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -109,6 +110,31 @@ public interface BiPredicateEx<T, U, E extends Throwable> {
     }
 
     default <C extends Throwable> BiPredicateEx<T, U, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                return test(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default BiPredicate<T, U> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default BiPredicate<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default BiPredicate<T, U> unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default BiPredicate<T, U> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return (t, u) -> {
             try {
                 return test(t, u);

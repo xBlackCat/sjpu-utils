@@ -94,4 +94,29 @@ public interface BiFunctionEx<T, U, R, E extends Throwable> {
             }
         };
     }
+
+    default BiFunction<T, U, R> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default BiFunction<T, U, R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default BiFunction<T, U, R> unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default BiFunction<T, U, R> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
+        return (t, u) -> {
+            try {
+                return apply(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
 }

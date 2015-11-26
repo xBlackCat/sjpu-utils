@@ -1,6 +1,7 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.function.BiFunction;
+import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -45,6 +46,31 @@ public interface DoubleFunctionEx<R, E extends Throwable> {
     }
 
     default <C extends Throwable> DoubleFunctionEx<R, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return t -> {
+            try {
+                return apply(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default DoubleFunction<R> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default DoubleFunction<R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default DoubleFunction<R> unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default DoubleFunction<R> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return t -> {
             try {
                 return apply(t);

@@ -2,6 +2,7 @@ package org.xblackcat.sjpu.util.function;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.LongToIntFunction;
 import java.util.function.Supplier;
 
 /**
@@ -45,6 +46,31 @@ public interface LongToIntFunctionEx<E extends Throwable> {
     }
 
     default <C extends Throwable> LongToIntFunctionEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return t -> {
+            try {
+                return applyAsInt(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default LongToIntFunction unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default LongToIntFunction unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default LongToIntFunction unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default LongToIntFunction unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return t -> {
             try {
                 return applyAsInt(t);

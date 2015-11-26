@@ -3,6 +3,7 @@ package org.xblackcat.sjpu.util.function;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToLongBiFunction;
 
 /**
  * Represents a function that accepts two arguments and produces a long-valued
@@ -57,6 +58,34 @@ public interface ToLongBiFunctionEx<T, U, E extends Throwable> {
     default <C extends Throwable> ToLongBiFunctionEx<T, U, C> cover(
             Function<Throwable, String> text,
             BiFunction<String, Throwable, C> cover
+    ) {
+        return (t, u) -> {
+            try {
+                return applyAsLong(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default ToLongBiFunction<T, U> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default ToLongBiFunction<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default ToLongBiFunction<T, U> unchecked(
+            Supplier<String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default ToLongBiFunction<T, U> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
     ) {
         return (t, u) -> {
             try {

@@ -2,6 +2,7 @@ package org.xblackcat.sjpu.util.function;
 
 
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -41,6 +42,31 @@ public interface BooleanSupplierEx<E extends Throwable> {
     }
 
     default <C extends Throwable> BooleanSupplierEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return () -> {
+            try {
+                return getAsBoolean();
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default BooleanSupplier unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default BooleanSupplier unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default BooleanSupplier unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default BooleanSupplier unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return () -> {
             try {
                 return getAsBoolean();

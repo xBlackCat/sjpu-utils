@@ -1,6 +1,7 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -73,6 +74,31 @@ public interface BiConsumerEx<T, U, E extends Throwable> {
     }
 
     default <C extends Throwable> BiConsumerEx<T, U, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                accept(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
+    default BiConsumer<T, U> unchecked(String exceptionText, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(() -> exceptionText, cover);
+    }
+
+    default BiConsumer<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(Throwable::getMessage, cover);
+    }
+
+    default BiConsumer<T, U> unchecked(Supplier<String> text, BiFunction<String, Throwable, ? extends RuntimeException> cover) {
+        return unchecked(e -> text.get(), cover);
+    }
+
+    default BiConsumer<T, U> unchecked(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, ? extends RuntimeException> cover
+    ) {
         return (t, u) -> {
             try {
                 accept(t, u);
