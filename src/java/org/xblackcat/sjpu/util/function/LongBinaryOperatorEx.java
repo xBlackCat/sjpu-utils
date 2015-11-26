@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents an operation upon two {@code long}-valued operands and producing a
  * {@code long}-valued result.   This is the primitive type specialization of
@@ -36,4 +40,27 @@ public interface LongBinaryOperatorEx<E extends Throwable> {
     default LongSupplierEx<E> fix(long left, long right) {
         return () -> applyAsLong(left, right);
     }
+
+    default <C extends Throwable> LongBinaryOperatorEx<C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> LongBinaryOperatorEx<C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> LongBinaryOperatorEx<C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> LongBinaryOperatorEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                return applyAsLong(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

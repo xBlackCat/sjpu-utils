@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents an operation upon two {@code double}-valued operands and producing a
  * {@code double}-valued result.   This is the primitive type specialization of
@@ -34,5 +38,27 @@ public interface DoubleBinaryOperatorEx<E extends Throwable> {
 
     default DoubleSupplierEx<E> fix(double left, double right) {
         return () -> applyAsDouble(left, right);
+    }
+
+    default <C extends Throwable> DoubleBinaryOperatorEx<C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> DoubleBinaryOperatorEx<C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> DoubleBinaryOperatorEx<C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> DoubleBinaryOperatorEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                return applyAsDouble(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
     }
 }

@@ -1,6 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a predicate (boolean-valued function) of two arguments.  This is
@@ -92,4 +95,27 @@ public interface BiPredicateEx<T, U, E extends Throwable> {
     default BooleanSupplierEx<E> fix(T t, U u) {
         return () -> test(t, u);
     }
+
+    default <C extends Throwable> BiPredicateEx<T, U, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> BiPredicateEx<T, U, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> BiPredicateEx<T, U, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> BiPredicateEx<T, U, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                return test(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents an operation on a single operand that produces a result of the
  * same type as its operand.  This is a specialization of {@code Function} for
@@ -25,4 +29,27 @@ public interface UnaryOperatorEx<T, E extends Throwable> extends FunctionEx<T, T
     static <T, E extends Throwable> UnaryOperatorEx<T, E> identity() {
         return t -> t;
     }
+
+    default <C extends Throwable> UnaryOperatorEx<T, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> UnaryOperatorEx<T, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> UnaryOperatorEx<T, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> UnaryOperatorEx<T, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return t -> {
+            try {
+                return apply(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

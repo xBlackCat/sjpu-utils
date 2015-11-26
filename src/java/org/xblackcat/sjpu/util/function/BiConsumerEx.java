@@ -1,6 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents an operation that accepts two input arguments and returns no
@@ -43,9 +46,9 @@ public interface BiConsumerEx<T, U, E extends Throwable> {
     default BiConsumerEx<T, U, E> andThen(BiConsumerEx<? super T, ? super U, E> after) {
         Objects.requireNonNull(after);
 
-        return (l, r) -> {
-            accept(l, r);
-            after.accept(l, r);
+        return (l, U) -> {
+            accept(l, U);
+            after.accept(l, U);
         };
     }
 
@@ -56,4 +59,27 @@ public interface BiConsumerEx<T, U, E extends Throwable> {
     default ConsumerEx<U, E> fixLeft(T t) {
         return u -> accept(t, u);
     }
+
+    default <C extends Throwable> BiConsumerEx<T, U, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> BiConsumerEx<T, U, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> BiConsumerEx<T, U, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> BiConsumerEx<T, U, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                accept(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

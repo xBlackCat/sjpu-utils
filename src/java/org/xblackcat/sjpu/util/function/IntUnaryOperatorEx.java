@@ -1,6 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents an operation on a single {@code int}-valued operand that produces
@@ -70,6 +73,28 @@ public interface IntUnaryOperatorEx<E extends Throwable> {
 
     default IntSupplierEx<E> fix(int value) {
         return () -> applyAsInt(value);
+    }
+
+    default <C extends Throwable> IntUnaryOperatorEx<C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> IntUnaryOperatorEx<C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> IntUnaryOperatorEx<C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> IntUnaryOperatorEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return t -> {
+            try {
+                return applyAsInt(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
     }
 
 }

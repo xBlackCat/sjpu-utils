@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents an operation that accepts an object-valued and a
  * {@code double}-valued argument, and returns no result.  This is the
@@ -33,4 +37,27 @@ public interface ObjDoubleConsumerEx<T, E extends Throwable> {
     default DoubleConsumerEx<E> fixLeft(T t) {
         return value -> accept(t, value);
     }
+
+    default <C extends Throwable> ObjDoubleConsumerEx<T, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> ObjDoubleConsumerEx<T, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> ObjDoubleConsumerEx<T, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> ObjDoubleConsumerEx<T, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                accept(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

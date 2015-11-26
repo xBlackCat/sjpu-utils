@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents a supplier of {@code double}-valued results.  This is the
  * {@code double}-producing primitive specialization of {@link SupplierEx}.
@@ -16,11 +20,33 @@ package org.xblackcat.sjpu.util.function;
  */
 @FunctionalInterface
 public interface DoubleSupplierEx<E extends Throwable> {
-
     /**
      * Gets a result.
      *
      * @return a result
      */
     double getAsDouble() throws E;
+
+    default <C extends Throwable> DoubleSupplierEx<C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> DoubleSupplierEx<C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> DoubleSupplierEx<C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> DoubleSupplierEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return () -> {
+            try {
+                return getAsDouble();
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

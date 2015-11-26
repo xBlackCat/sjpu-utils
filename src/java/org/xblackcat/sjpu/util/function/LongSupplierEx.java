@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents a supplier of {@code long}-valued results.  This is the
  * {@code long}-producing primitive specialization of {@link SupplierEx}.
@@ -23,4 +27,27 @@ public interface LongSupplierEx<E extends Throwable> {
      * @return a result
      */
     long getAsLong() throws E;
+
+    default <C extends Throwable> LongSupplierEx<C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> LongSupplierEx<C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> LongSupplierEx<C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> LongSupplierEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return () -> {
+            try {
+                return getAsLong();
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

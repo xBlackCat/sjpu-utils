@@ -1,6 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a function that accepts two arguments and produces a result.
@@ -46,15 +49,49 @@ public interface BiFunctionEx<T, U, R, E extends Throwable> {
         return (T t, U u) -> after.apply(apply(t, u));
     }
 
+    /**
+     * Build and return {@linkplain FunctionEx} interface obtained from the bi-function by fixing second parameter with specified constant value.
+     *
+     * @param u constant value for fixing second parameter
+     * @return reduced bi-function by fixing second parameter
+     */
     default FunctionEx<T, R, E> fixRight(U u) {
         return t -> apply(t, u);
     }
 
+    /**
+     * Build and return {@linkplain FunctionEx} interface obtained from the bi-function by fixing first parameter with specified constant value.
+     *
+     * @param t constant value for fixing first parameter
+     * @return reduced bi-function by fixing first parameter
+     */
     default FunctionEx<U, R, E> fixLeft(T t) {
         return u -> apply(t, u);
     }
 
     default SupplierEx<R, E> fix(T t, U u) {
         return () -> apply(t, u);
+    }
+
+    default <C extends Throwable> BiFunctionEx<T, U, R, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> BiFunctionEx<T, U, R, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> BiFunctionEx<T, U, R, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> BiFunctionEx<T, U, R, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                return apply(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
     }
 }

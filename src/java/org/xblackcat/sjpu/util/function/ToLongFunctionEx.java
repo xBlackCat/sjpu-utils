@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents a function that produces a long-valued result.  This is the
  * {@code long}-producing primitive specialization for {@link FunctionEx}.
@@ -25,6 +29,28 @@ public interface ToLongFunctionEx<T, E extends Throwable> {
 
     default LongSupplierEx<E> fix(T value) {
         return () -> applyAsLong(value);
+    }
+
+    default <C extends Throwable> ToLongFunctionEx<T, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> ToLongFunctionEx<T, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> ToLongFunctionEx<T, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> ToLongFunctionEx<T, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return t -> {
+            try {
+                return applyAsLong(t);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
     }
 
 }

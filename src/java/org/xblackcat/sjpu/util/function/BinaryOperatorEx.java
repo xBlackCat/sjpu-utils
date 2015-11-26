@@ -2,6 +2,9 @@ package org.xblackcat.sjpu.util.function;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents an operation upon two operands of the same type, producing a result
@@ -57,4 +60,27 @@ public interface BinaryOperatorEx<T, E extends Throwable> extends BiFunctionEx<T
     default UnaryOperatorEx<T, E> fixLeft(T t) {
         return u -> apply(t, u);
     }
+
+    default <C extends Throwable> BinaryOperatorEx<T, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> BinaryOperatorEx<T, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> BinaryOperatorEx<T, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> BinaryOperatorEx<T, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return (t, u) -> {
+            try {
+                return apply(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

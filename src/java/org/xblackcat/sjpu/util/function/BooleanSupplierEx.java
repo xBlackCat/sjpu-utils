@@ -1,6 +1,10 @@
 package org.xblackcat.sjpu.util.function;
 
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents a supplier of {@code boolean}-valued results.  This is the
  * {@code boolean}-producing primitive specialization of {@link SupplierEx}.
@@ -23,4 +27,27 @@ public interface BooleanSupplierEx<E extends Throwable> {
      * @return a result
      */
     boolean getAsBoolean() throws E;
+
+    default <C extends Throwable> BooleanSupplierEx<C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> BooleanSupplierEx<C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> BooleanSupplierEx<C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> BooleanSupplierEx<C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> cover) {
+        return () -> {
+            try {
+                return getAsBoolean();
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

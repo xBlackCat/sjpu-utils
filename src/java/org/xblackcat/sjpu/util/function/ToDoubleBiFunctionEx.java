@@ -1,5 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Represents a function that accepts two arguments and produces a double-valued
  * result.  This is the {@code double}-producing primitive specialization for
@@ -37,4 +41,30 @@ public interface ToDoubleBiFunctionEx<T, U, E extends Throwable> {
     default DoubleSupplierEx<E> fix(T t, U u) {
         return () -> applyAsDouble(t, u);
     }
+
+    default <C extends Throwable> ToDoubleBiFunctionEx<T, U, C> cover(String exceptionText, BiFunction<String, Throwable, C> cover) {
+        return cover(() -> exceptionText, cover);
+    }
+
+    default <C extends Throwable> ToDoubleBiFunctionEx<T, U, C> cover(BiFunction<String, Throwable, C> cover) {
+        return cover(Throwable::getMessage, cover);
+    }
+
+    default <C extends Throwable> ToDoubleBiFunctionEx<T, U, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> cover) {
+        return cover(e -> text.get(), cover);
+    }
+
+    default <C extends Throwable> ToDoubleBiFunctionEx<T, U, C> cover(
+            Function<Throwable, String> text,
+            BiFunction<String, Throwable, C> cover
+    ) {
+        return (t, u) -> {
+            try {
+                return applyAsDouble(t, u);
+            } catch (Throwable e) {
+                throw cover.apply(text.apply(e), e);
+            }
+        };
+    }
+
 }

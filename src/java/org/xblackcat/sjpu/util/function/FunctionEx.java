@@ -1,6 +1,9 @@
 package org.xblackcat.sjpu.util.function;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a function that accepts one argument and produces a result.
@@ -74,5 +77,27 @@ public interface FunctionEx<T, R, E extends Throwable> {
 
     default SupplierEx<R, E> fix(T t) {
         return () -> apply(t);
+    }
+
+    default <C extends Throwable> FunctionEx<T, R, C> cover(String exceptionText, BiFunction<String, Throwable, C> coverage) {
+        return cover(() -> exceptionText, coverage);
+    }
+
+    default <C extends Throwable> FunctionEx<T, R, C> cover(BiFunction<String, Throwable, C> coverage) {
+        return cover(Throwable::getMessage, coverage);
+    }
+
+    default <C extends Throwable> FunctionEx<T, R, C> cover(Supplier<String> text, BiFunction<String, Throwable, C> coverage) {
+        return cover(e -> text.get(), coverage);
+    }
+
+    default <C extends Throwable> FunctionEx<T, R, C> cover(Function<Throwable, String> text, BiFunction<String, Throwable, C> coverage) {
+        return t -> {
+            try {
+                return apply(t);
+            } catch (Throwable e) {
+                throw coverage.apply(text.apply(e), e);
+            }
+        };
     }
 }
