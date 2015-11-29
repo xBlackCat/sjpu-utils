@@ -59,6 +59,10 @@ public interface DoubleFunctionEx<R, E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default DoubleFunction<R> unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default DoubleFunction<R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

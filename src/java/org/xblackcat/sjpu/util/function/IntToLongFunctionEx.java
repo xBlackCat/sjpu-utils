@@ -58,6 +58,10 @@ public interface IntToLongFunctionEx<E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default IntToLongFunction unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default IntToLongFunction unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

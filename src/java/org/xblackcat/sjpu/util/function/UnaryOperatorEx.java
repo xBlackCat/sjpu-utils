@@ -57,6 +57,10 @@ public interface UnaryOperatorEx<T, E extends Throwable> extends FunctionEx<T, T
         return unchecked(() -> exceptionText, cover);
     }
 
+    default UnaryOperator<T> unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default UnaryOperator<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

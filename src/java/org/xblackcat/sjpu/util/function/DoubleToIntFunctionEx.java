@@ -57,6 +57,10 @@ public interface DoubleToIntFunctionEx<E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default DoubleToIntFunction unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default DoubleToIntFunction unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

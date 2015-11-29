@@ -123,6 +123,10 @@ public interface BiPredicateEx<T, U, E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default BiPredicate<T, U> unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default BiPredicate<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

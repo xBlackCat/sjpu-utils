@@ -88,6 +88,10 @@ public interface BinaryOperatorEx<T, E extends Throwable> extends BiFunctionEx<T
         return unchecked(() -> exceptionText, cover);
     }
 
+    default BinaryOperator<T> unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default BinaryOperator<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

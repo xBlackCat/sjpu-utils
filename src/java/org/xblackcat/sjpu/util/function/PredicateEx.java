@@ -127,6 +127,10 @@ public interface PredicateEx<T, E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default Predicate<T> unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default Predicate<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

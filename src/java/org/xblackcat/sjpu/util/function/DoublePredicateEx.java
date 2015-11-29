@@ -113,6 +113,10 @@ public interface DoublePredicateEx<E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default DoublePredicate unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default DoublePredicate unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

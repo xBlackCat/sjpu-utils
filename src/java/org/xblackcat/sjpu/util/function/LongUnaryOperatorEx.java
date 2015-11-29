@@ -97,6 +97,10 @@ public interface LongUnaryOperatorEx<E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default LongUnaryOperator unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default LongUnaryOperator unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

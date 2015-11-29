@@ -54,6 +54,10 @@ public interface DoubleSupplierEx<E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default DoubleSupplier unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default DoubleSupplier unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }

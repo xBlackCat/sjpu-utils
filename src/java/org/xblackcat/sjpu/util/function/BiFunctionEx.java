@@ -99,6 +99,10 @@ public interface BiFunctionEx<T, U, R, E extends Throwable> {
         return unchecked(() -> exceptionText, cover);
     }
 
+    default BiFunction<T, U, R> unchecked() {
+        return unchecked(RuntimeException::new);
+    }
+
     default BiFunction<T, U, R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
         return unchecked(Throwable::getMessage, cover);
     }
