@@ -71,7 +71,7 @@ public interface DoubleBinaryOperatorEx<E extends Throwable> {
     }
 
     default DoubleBinaryOperator unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default DoubleBinaryOperator unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

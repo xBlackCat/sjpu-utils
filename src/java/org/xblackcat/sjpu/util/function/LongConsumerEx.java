@@ -100,7 +100,7 @@ public interface LongConsumerEx<E extends Throwable> {
     }
 
     default LongConsumer unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default LongConsumer unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

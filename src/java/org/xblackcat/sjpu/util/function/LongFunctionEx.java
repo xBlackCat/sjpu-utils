@@ -60,7 +60,7 @@ public interface LongFunctionEx<R, E extends Throwable> {
     }
 
     default LongFunction<R> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default LongFunction<R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

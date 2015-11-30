@@ -114,7 +114,7 @@ public interface DoublePredicateEx<E extends Throwable> {
     }
 
     default DoublePredicate unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default DoublePredicate unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

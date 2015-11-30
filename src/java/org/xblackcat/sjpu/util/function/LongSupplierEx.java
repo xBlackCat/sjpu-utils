@@ -56,7 +56,7 @@ public interface LongSupplierEx<E extends Throwable> {
     }
 
     default LongSupplier unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default LongSupplier unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

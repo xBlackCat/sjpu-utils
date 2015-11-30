@@ -88,7 +88,7 @@ public interface BiConsumerEx<T, U, E extends Throwable> {
     }
 
     default BiConsumer<T, U> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default BiConsumer<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

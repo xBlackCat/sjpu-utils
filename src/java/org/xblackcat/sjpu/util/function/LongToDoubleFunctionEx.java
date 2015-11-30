@@ -62,7 +62,7 @@ public interface LongToDoubleFunctionEx<E extends Throwable> {
     }
 
     default LongToDoubleFunction unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default LongToDoubleFunction unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

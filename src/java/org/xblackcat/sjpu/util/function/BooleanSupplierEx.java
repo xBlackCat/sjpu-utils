@@ -56,7 +56,7 @@ public interface BooleanSupplierEx<E extends Throwable> {
     }
 
     default BooleanSupplier unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default BooleanSupplier unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

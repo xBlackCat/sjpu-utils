@@ -100,7 +100,7 @@ public interface DoubleConsumerEx<E extends Throwable> {
     }
 
     default DoubleConsumer unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default DoubleConsumer unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

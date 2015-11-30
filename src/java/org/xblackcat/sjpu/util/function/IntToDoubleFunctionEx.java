@@ -59,7 +59,7 @@ public interface IntToDoubleFunctionEx<E extends Throwable> {
     }
 
     default IntToDoubleFunction unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default IntToDoubleFunction unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

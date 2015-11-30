@@ -76,7 +76,7 @@ public interface ToDoubleBiFunctionEx<T, U, E extends Throwable> {
     }
 
     default ToDoubleBiFunction<T, U> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default ToDoubleBiFunction<T, U> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

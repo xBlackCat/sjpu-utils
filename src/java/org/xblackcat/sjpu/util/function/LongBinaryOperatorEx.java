@@ -47,7 +47,7 @@ public interface LongBinaryOperatorEx<E extends Throwable> {
     }
 
     default LongBinaryOperator unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default LongBinaryOperator unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

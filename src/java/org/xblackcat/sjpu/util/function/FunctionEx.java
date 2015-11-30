@@ -106,7 +106,7 @@ public interface FunctionEx<T, R, E extends Throwable> {
     }
 
     default Function<T, R> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default Function<T, R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

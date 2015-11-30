@@ -60,7 +60,7 @@ public interface IntFunctionEx<R, E extends Throwable> {
     }
 
     default IntFunction<R> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default IntFunction<R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

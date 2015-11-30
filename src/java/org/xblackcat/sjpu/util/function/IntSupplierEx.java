@@ -56,7 +56,7 @@ public interface IntSupplierEx<E extends Throwable> {
     }
 
     default IntSupplier unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default IntSupplier unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

@@ -60,7 +60,7 @@ public interface DoubleFunctionEx<R, E extends Throwable> {
     }
 
     default DoubleFunction<R> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default DoubleFunction<R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

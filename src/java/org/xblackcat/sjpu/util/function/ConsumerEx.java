@@ -75,7 +75,7 @@ public interface ConsumerEx<T, E extends Throwable> {
     }
 
     default Consumer<T> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default Consumer<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

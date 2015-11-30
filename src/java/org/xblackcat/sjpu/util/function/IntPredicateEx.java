@@ -138,7 +138,7 @@ public interface IntPredicateEx<E extends Throwable> {
     }
 
     default IntPredicate unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default IntPredicate unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

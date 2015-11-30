@@ -100,7 +100,7 @@ public interface BiFunctionEx<T, U, R, E extends Throwable> {
     }
 
     default BiFunction<T, U, R> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default BiFunction<T, U, R> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

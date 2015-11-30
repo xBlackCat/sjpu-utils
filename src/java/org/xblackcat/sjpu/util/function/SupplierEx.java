@@ -54,7 +54,7 @@ public interface SupplierEx<T, E extends Throwable> {
     }
 
     default Supplier<T> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default Supplier<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

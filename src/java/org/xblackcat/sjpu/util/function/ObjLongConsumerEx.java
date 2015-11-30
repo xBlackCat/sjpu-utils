@@ -66,7 +66,7 @@ public interface ObjLongConsumerEx<T, E extends Throwable> {
     }
 
     default ObjLongConsumer<T> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default ObjLongConsumer<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

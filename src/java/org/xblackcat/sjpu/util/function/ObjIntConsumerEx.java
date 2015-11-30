@@ -66,7 +66,7 @@ public interface ObjIntConsumerEx<T, E extends Throwable> {
     }
 
     default ObjIntConsumer<T> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default ObjIntConsumer<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

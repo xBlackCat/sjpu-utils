@@ -138,7 +138,7 @@ public interface LongPredicateEx<E extends Throwable> {
     }
 
     default LongPredicate unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default LongPredicate unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

@@ -59,7 +59,7 @@ public interface ToIntFunctionEx<T, E extends Throwable> {
     }
 
     default ToIntFunction<T> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default ToIntFunction<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

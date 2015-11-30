@@ -59,7 +59,7 @@ public interface ToLongFunctionEx<T, E extends Throwable> {
     }
 
     default ToLongFunction<T> unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default ToLongFunction<T> unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

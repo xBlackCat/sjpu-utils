@@ -103,7 +103,7 @@ public interface IntUnaryOperatorEx<E extends Throwable> {
     }
 
     default IntUnaryOperator unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default IntUnaryOperator unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {

@@ -69,7 +69,7 @@ public interface IntBinaryOperatorEx<E extends Throwable> {
     }
 
     default IntBinaryOperator unchecked() {
-        return unchecked(RuntimeException::new);
+        return unchecked(CoveringException::new);
     }
 
     default IntBinaryOperator unchecked(BiFunction<String, Throwable, ? extends RuntimeException> cover) {
